@@ -1,44 +1,40 @@
-var co = require('co');
-var Nightmare = require('nightmare');
-var thunkify = require('thunkify');
+'use strict';
 
-var mkdirp = thunkify(require('mkdirp'));
+let _ = require('lodash');
+let co = require('co');
+let request = require('co-request');
 
-const imageDir = './screenshots';
+let webpage = require('./webpage');
 
-const nightmare = Nightmare();
+function* topHnStories() {
+  var storyIds = yield request('https://hacker-news.firebaseio.com/v0/topstories.json');
+  storyIds = JSON.parse(storyIds.body);
+
+  storyIds = _.take(storyIds, 10);
+
+  var stories = yield storyIds.map(function (storyId) {
+    return co(function () {
+      return request(`https://hacker-news.firebaseio.com/v0/item/${storyId}.json`);
+    }).catch(onerror);
+  });
+
+  var urls = stories.map(function (story) {
+    return JSON.parse(story.body).url;
+  });
+
+  return urls;
+}
 
 co(function* () {
-  yield mkdirp(imageDir);
+  var urls = yield topHnStories();
 
-  console.log('HEYO');
+  for (var u = 0; u < urls.length; u++) {
+    var url = urls[u];
+    yield webpage.screenshotElements(url, 'a');
+    yield webpage.screenshotElements(url, 'input');
+  }
+}).catch(onerror);
 
-  var inputsToScreenshot = yield nightmare
-    .goto('https://github.com/')
-    .evaluate(function () {
-      var rects = [];
-
-      [].forEach.call(document.querySelectorAll('input'), function (input) {
-        // Ignore hidden elements
-        if (input.offsetParent === null) return;
-
-        var rect = input.getBoundingClientRect();
-        rects.push({
-          x: parseInt(rect.left, 10),
-          y: parseInt(rect.top, 10),
-          width: parseInt(rect.width, 10),
-          height: parseInt(rect.height, 10)
-        });
-      });
-
-      return rects;
-    });
-
-  var i = 0;
-
-  yield inputsToScreenshot.map(function (rect) {
-    return nightmare.screenshot('screenshots/input-' + i++ + '.png', rect);
-  });
-}).then(function () {
-  console.log('Sup biatches!!');
-});
+function onerror(err) {
+  console.error(err.stack);
+}
