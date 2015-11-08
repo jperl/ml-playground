@@ -1,4 +1,5 @@
-'use strict';
+// TODO need to fix everything
+// "nightmare": "^2.0.7",
 
 let _ = require('lodash');
 let co = require('co');
@@ -10,7 +11,7 @@ function* topHnStories() {
   var storyIds = yield request('https://hacker-news.firebaseio.com/v0/topstories.json');
   storyIds = JSON.parse(storyIds.body);
 
-  storyIds = _.take(storyIds, 10);
+  storyIds = _.take(storyIds, 20);
 
   var stories = yield storyIds.map(function (storyId) {
     return co(function () {
@@ -30,8 +31,12 @@ co(function* () {
 
   for (var u = 0; u < urls.length; u++) {
     var url = urls[u];
-    yield webpage.screenshotElements(url, 'a');
-    yield webpage.screenshotElements(url, 'input');
+    if (url.indexOf('.pdf') < 0) {
+      console.log('Crawling', url);
+      yield webpage.screenshotElements(url, 'a');
+      var folder = yield webpage.screenshotElements(url, 'input');
+      // TODO if nothing in folder, delete it
+    }
   }
 }).catch(onerror);
 

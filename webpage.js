@@ -5,7 +5,7 @@ var Url = require('url');
 
 var thunkify = require('thunkify');
 var mkdirp = thunkify(require('mkdirp'));
-var shortid = require('shortid');
+// var shortid = require('shortid');
 var stat = thunkify(fs.stat);
 
 const imageDir = './screenshots';
@@ -17,7 +17,7 @@ exports.screenshotElements = function (url, selector) {
 
   return co(function* () {
     // Make the screenshot directory
-    var pageImagesDir = `${imageDir}/${shortid.generate()}-${Url.parse(url).hostname}`;
+    var pageImagesDir = `${imageDir}/${Url.parse(url).hostname}`;
     yield mkdirp(pageImagesDir);
 
     // Screenshot the visible elements 
