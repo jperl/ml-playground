@@ -1,10 +1,11 @@
 import 'babel/polyfill';
 
+import _ from 'lodash';
 import crypto from 'crypto';
 import Promise from 'bluebird';
 
 import Browser from './browser';
-import topHnStories from './sites';
+import {getHnStory, topHnStories} from './sites';
 
 const fs = Promise.promisifyAll(require('fs'));
 const mkdirp = Promise.promisifyAll(require('mkdirp'));
@@ -13,25 +14,40 @@ const mkdirp = Promise.promisifyAll(require('mkdirp'));
 //   url: 'http://priceonomics.com/how-to-be-a-lawyer-without-going-to-law-school',
 // }];
 
+const browser = new Browser();
+
 async function crawl() {
-  const stories = await topHnStories(10);
+  let storyIds = await topHnStories();
 
-  const browser = new Browser();
+  // The loaded story ids are the first part of the names of the directories under img
+  // we can assume they are all directories -- don't store anything else there.
+  const loadedStoryIds = (await fs.readdirAsync('./img')).map(dir => {
+    return Number(dir.split('-')[0]);
+  });
 
-  for (let i = 0; i < stories.length; i++) {
-    const story = stories[i];
+  // Crawl the next 100 stories
+  storyIds = _.difference(storyIds, loadedStoryIds);
+  storyIds = _.take(storyIds, 100);
+
+  for (let i = 0; i < storyIds.length; i++) {
+    const story = await getHnStory(storyIds[i]);
+
+    // Do not crawl pdfs
+    if (story.url.indexOf('.pdf') > -1) break;
+
+    console.log('crawl', story.id, story.url);
 
     browser.goTo(story.url);
 
     const hash = crypto.createHash('md5').update(story.url).digest('hex');
-    const path = `./img/${hash}`;
+    const imageDir = `./img/${story.id}-${hash}`;
 
-    // Make the path
-    await mkdirp.mkdirpAsync(path);
-    await fs.writeFileAsync(path + '/url.txt', story.url);
+    // Make the imageDir
+    await mkdirp.mkdirpAsync(imageDir);
+    await fs.writeFileAsync(imageDir + '/url.txt', story.url);
 
-    await browser.screenshotSelector('a', path);
-    await browser.screenshotSelector('input', path);
+    await browser.screenshotSelector('a', imageDir);
+    await browser.screenshotSelector('input', imageDir);
   }
 
   console.log('DONE CRAWLING');

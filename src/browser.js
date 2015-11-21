@@ -14,8 +14,7 @@ export default class Browser {
   }
 
   goTo(url) {
-    console.log('go to', url);
-    this.page = this.nightmare.goto(url);
+    this.nightmare.goto(url);
   }
 
   // Get the dimensions of the elements that match a selector
