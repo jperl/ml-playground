@@ -1,22 +1,28 @@
 import _ from 'lodash';
 import rp from 'request-promise';
 
-async function getTopHnStories() {
-  var storyIds = await rp('https://hacker-news.firebaseio.com/v0/topstories.json');
-  storyIds = JSON.parse(storyIds);
-  storyIds = _.take(storyIds, 20);
+export async function topHnStories() {
+  var storyIds = await rp({
+    uri: 'https://hacker-news.firebaseio.com/v0/topstories.json',
+    json: true
+  });
 
-  console.log(storyIds);
+  storyIds = _.take(storyIds, 5);
 
-  // var stories = storyIds.map(function (storyId) {
-  // 	return rp(`https://hacker-news.firebaseio.com/v0/item/${storyId}.json`);
-  // });
+  var stories = await Promise.all(storyIds.map((storyId) => {
+    return rp({
+      uri: `https://hacker-news.firebaseio.com/v0/item/${storyId}.json`,
+      json: true
+    });
+  }));
 
-  // var urls = stories.map(function (story) {
-  //   return JSON.parse(story.body).url;
-  // });
+  // Filter out pdfs
+  stories = _.filter(stories, (story) => {
+    return story.url.indexOf('.pdf') < 0;
+  });
 
-  return urls;
+  console.log('We got here', stories);
+
+  // For debugging only return one story
+  return _.take(stories, 1);
 }
-
-getTopHnStories();

@@ -1,6 +1,17 @@
 {
-  "parser": "babel-eslint",
+  "extends": "airbnb/base",
+  "ecmaFeatures": {
+    "generators": true
+  },
+  "env": {
+    "mocha": true
+  },
+  "globals": {
+    "expect": false
+  },
   "rules": {
-    "strict": 0
+    "func-names": 0,
+    "generator-star-spacing": [2, {"before": false, "after": true}],
+    "space-before-function-paren": [2, { "anonymous": "always", "named": "never" }]
   }
 }
