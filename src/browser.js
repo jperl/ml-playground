@@ -6,7 +6,11 @@ const mkdirp = Promise.promisifyAll(require('mkdirp'));
 
 export default class Browser {
   constructor() {
-    this.nightmare = Nightmare(); // eslint-disable-line new-cap
+    this.nightmare = Nightmare({ // eslint-disable-line new-cap
+      width: 800,
+      height: 600,
+      show: true,
+    });
   }
 
   goTo(url) {
@@ -19,34 +23,36 @@ export default class Browser {
     const self = this;
     return Promise.coroutine(function* () {
       /* eslint-disable */
-      return yield self.page.evaluate(function (qs) {
-        // this gets evaluated in the browser, avoid complexity
-        var rects = [];
+      return yield self.nightmare.evaluate(function (qs) {
+          // this gets evaluated in the browser, avoid complexity
+          var rects = [];
 
-        var elements = document.querySelectorAll(qs);
-        [].forEach.call(elements, function (element) {
-          // ignore non-visible elements
-          if (element.offsetWidth < 1 || element.offsetHeight < 1) return;
+          var elements = document.querySelectorAll(qs);
+          [].forEach.call(elements, function (element) {
+            // ignore non-visible elements
+            if (element.offsetWidth < 1 || element.offsetHeight < 1) return;
 
-          var rect = element.getBoundingClientRect();
+            var rect = element.getBoundingClientRect();
 
-          rect = {
-            x: parseInt(rect.left, 10),
-            y: parseInt(rect.top, 10),
-            width: parseInt(rect.width, 10),
-            height: parseInt(rect.height, 10),
-          };
+            rect = {
+              x: parseInt(rect.left, 10),
+              y: parseInt(rect.top, 10),
+              width: parseInt(rect.width, 10),
+              height: parseInt(rect.height, 10),
+            };
 
-          rects.push(rect);
-        });
+            rects.push(rect);
+          });
 
-        return rects;
-      }, selector);
-      /* eslint-enable */
+          return rects;
+        }, selector)
+        /* eslint-enable */
     })();
   }
 
-  async screenshot(element) {
+  screenshot(element) {
+    console.log('screenshot', element.clip);
+
     const self = this;
     return Promise.coroutine(function* () {
       return yield self.nightmare.screenshot(element.path, element.clip);
@@ -70,9 +76,9 @@ export default class Browser {
     });
 
     // Screenshot the elements in parallel
-    await Promise.all(elements.map(element => {
-      return self.screenshot(element);
-    }));
+    await Promise.each(elements, item => {
+      return self.screenshot(item);
+    });
 
     // Delete the 0kb (bad) screenshot
     const stats = await Promise.all(elements.map(element => {

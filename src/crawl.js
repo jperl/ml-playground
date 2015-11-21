@@ -10,18 +10,18 @@ const fs = Promise.promisifyAll(require('fs'));
 const mkdirp = Promise.promisifyAll(require('mkdirp'));
 
 // const stories = [{ // for debugging
-//   url: 'http://www.google.com',
+//   url: 'http://priceonomics.com/how-to-be-a-lawyer-without-going-to-law-school',
 // }];
 
 async function crawl() {
-  const stories = await topHnStories();
+  const stories = await topHnStories(10);
 
   const browser = new Browser();
 
   for (let i = 0; i < stories.length; i++) {
     const story = stories[i];
 
-    await browser.goTo(story.url);
+    browser.goTo(story.url);
 
     const hash = crypto.createHash('md5').update(story.url).digest('hex');
     const path = `./img/${hash}`;
@@ -33,6 +33,8 @@ async function crawl() {
     await browser.screenshotSelector('a', path);
     await browser.screenshotSelector('input', path);
   }
+
+  console.log('DONE CRAWLING');
 }
 
 crawl();

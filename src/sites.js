@@ -1,15 +1,15 @@
 import _ from 'lodash';
 import rp from 'request-promise';
 
-export default async function topHnStories() {
+export default async function topHnStories(take) {
   let storyIds = await rp({
     uri: 'https://hacker-news.firebaseio.com/v0/topstories.json',
     json: true,
   });
 
-  storyIds = _.take(storyIds, 5);
+  storyIds = _.take(storyIds, take || 10);
 
-  let stories = await Promise.all(storyIds.map((storyId) => {
+  let stories = await Promise.all(storyIds.map(storyId => {
     return rp({
       uri: `https://hacker-news.firebaseio.com/v0/item/${storyId}.json`,
       json: true,
