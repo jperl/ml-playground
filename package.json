@@ -4,7 +4,7 @@
   "description": "",
   "main": "crawl.js",
   "scripts": {
-    "compile": "node_modules/.bin/babel src --out-dir dist",
+    "compile": "node_modules/.bin/babel src --out-dir dist --source-maps",
     "compile:watch": "npm run compile -- --watch",
     "crawl": "node dist/crawl.js",
     "crawl:watch": "npm run compile:watch | nodemon dist/crawl.js",
@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "lodash": "^3.10.1",
+    "mkdirp": "^0.5.1",
     "nightmare": "^2.0.7",
     "request-promise": "^1.0.2"
   },
@@ -20,7 +21,6 @@
     "babel": "^5.8.23",
     "babel-eslint": "^4.1.5",
     "eslint": "^1.10.1",
-    "eslint-config-airbnb": "^1.0.0",
-    "mkdirp": "^0.5.1"
+    "eslint-config-airbnb": "^1.0.0"
   }
 }
