@@ -1,15 +1,10 @@
 // import Nightmare from 'nightmare';
 // import Url from 'url';
 // import thunkify from 'thunkify';
-
 // import fs = Promise.promisify(require 'fs');
-
 // // import mkdirp = thunkify(require('mkdirp';
-
 // const imageDir = './screenshots';
-
 // let nightmare;
-
 // async function rectsForSelector(selector) {
 //   return await page.evaluate(function (qs) {
 //     var rects = [];
@@ -33,7 +28,6 @@
 //     return rects;
 //   }, selector);
 // };
-
 // async function screenshotElements(id, url, selectors) {
 //   if (!nightmare) nightmare = Nightmare();
 
@@ -41,7 +35,7 @@
 //   var pageDir = `${imageDir}/${id}`;
 //   await fs.mkdirAsync(pageDir);
 
-//   // Screenshot the visible elements 
+//   // Screenshot the visible elements
 //   var page = nightmare.goto(url);
 
 //   var i = 0;

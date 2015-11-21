@@ -1,22 +1,18 @@
 import _ from 'lodash';
 import rp from 'request-promise';
 
-export async function topHnStories() {
-  console.log('topHnStories');
-
-  var storyIds = await rp({
+export default async function topHnStories() {
+  let storyIds = await rp({
     uri: 'https://hacker-news.firebaseio.com/v0/topstories.json',
-    json: true
+    json: true,
   });
 
   storyIds = _.take(storyIds, 5);
 
-  console.log(topHnStories);
-
-  var stories = await Promise.all(storyIds.map((storyId) => {
+  let stories = await Promise.all(storyIds.map((storyId) => {
     return rp({
       uri: `https://hacker-news.firebaseio.com/v0/item/${storyId}.json`,
-      json: true
+      json: true,
     });
   }));
 
@@ -25,8 +21,5 @@ export async function topHnStories() {
     return story.url.indexOf('.pdf') < 0;
   });
 
-  console.log('We got here', stories);
-
-  // For debugging only return one story
-  return _.take(stories, 1);
+  return stories;
 }

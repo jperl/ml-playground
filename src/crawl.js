@@ -1,15 +1,14 @@
-// import _ from 'lodash';
-// import topHnStories from './sitemap';
+import 'babel/polyfill';
 
-// async function crawl() {
-//   var stories = await topHnStories();
+import topHnStories from './sitemap';
 
-//   console.log('Done worked tho', stories);
+async function crawl() {
+  const stories = await topHnStories();
 
-//   stories.forEach((story) => {
-//     console.log('Crawling', story.url);
-//     // await webpage.screenshotElements(story.url, ['a', 'input']);
-//   });
-// }
+  stories.forEach(story => {
+    console.log('crawl', story.url);
+    // await webpage.screenshotElements(story.url, ['a', 'input']);
+  });
+}
 
-// crawl();
+crawl();
