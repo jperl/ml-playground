@@ -2,12 +2,16 @@ import _ from 'lodash';
 import rp from 'request-promise';
 
 export async function topHnStories() {
+  console.log('topHnStories');
+
   var storyIds = await rp({
     uri: 'https://hacker-news.firebaseio.com/v0/topstories.json',
     json: true
   });
 
   storyIds = _.take(storyIds, 5);
+
+  console.log(topHnStories);
 
   var stories = await Promise.all(storyIds.map((storyId) => {
     return rp({

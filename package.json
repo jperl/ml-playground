@@ -4,8 +4,10 @@
   "description": "",
   "main": "crawl.js",
   "scripts": {
-    "crawl": "set NODE_ENV=development && webpack --config ./config/webpack.development.config.js --progress --profile --colors",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "compile": "babel src/crawl.js --out-file dist/crawl.js",
+    "compile:watch": "npm run compile -- --watch",
+    "crawl": "node dist/crawl.js",
+    "crawl:watch": "npm run compile:watch | nodemon dist/crawl.js"
   },
   "dependencies": {
     "lodash": "^3.10.1",
@@ -15,14 +17,10 @@
   "devDependencies": {
     "babel-core": "^6.2.1",
     "babel-eslint": "^4.1.5",
-    "babel-plugin-transform-runtime": "^6.1.18",
     "babel-preset-es2015": "^6.1.2",
     "babel-preset-stage-0": "^6.1.18",
-    "dotenv": "^1.2.0",
     "eslint": "^1.10.1",
     "eslint-config-airbnb": "^1.0.0",
-    "mkdirp": "^0.5.1",
-    "webpack": "^1.12.8",
-    "webpack-notifier": "^1.2.1"
+    "mkdirp": "^0.5.1"
   }
 }
