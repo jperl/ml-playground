@@ -6,7 +6,7 @@
   "scripts": {
     "compile": "node_modules/.bin/babel src --out-dir dist --source-maps",
     "compile:watch": "npm run compile -- --watch",
-    "crawl": "node dist/crawl.js",
+    "crawl": "npm run compile && node dist/crawl.js",
     "crawl:watch": "npm run compile:watch | nodemon dist/crawl.js",
     "eslint": "eslint ./src",
     "test": "npm run eslint"
@@ -15,7 +15,7 @@
     "bluebird": "^3.0.5",
     "lodash": "^3.10.1",
     "mkdirp": "^0.5.1",
-    "nightmare": "^2.0.7",
+    "nightmare": "^2.0.8",
     "request-promise": "^1.0.2"
   },
   "devDependencies": {

@@ -50,8 +50,6 @@ export default class Browser {
   }
 
   screenshot(element) {
-    console.log('screenshot', element.clip);
-
     const self = this;
     return Promise.coroutine(function* () {
       return yield self.nightmare.screenshot(element.path, element.clip);
@@ -84,13 +82,18 @@ export default class Browser {
       return fs.statAsync(element.path);
     }));
 
+    let invalid = 0;
+
     // Delete the 0kb screenshots
     stats.forEach((stat, index) => {
       if (!stat.size) {
         fs.unlink(elements[index].path);
+        invalid++;
       }
     });
 
-    console.log('finished screenshots for', selector);
+    let output = `screenshot ${elements.length - invalid} ${selector}`;
+    if (invalid) output += ', ' + invalid + ' invalid';
+    console.log(output);
   }
 }

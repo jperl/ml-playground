@@ -27,17 +27,18 @@ async function crawl() {
 
   // Crawl the next 100 stories
   storyIds = _.difference(storyIds, loadedStoryIds);
+
   storyIds = _.take(storyIds, 100);
 
   for (let i = 0; i < storyIds.length; i++) {
     const story = await getHnStory(storyIds[i]);
 
-    // Do not crawl pdfs
-    if (story.url.indexOf('.pdf') > -1) break;
-
-    console.log('crawl', story.id, story.url);
+    // Ignore deleted stories, ask hn and pdfs
+    if (!story || !story.url || story.url.indexOf('pdf') > -1) continue;
 
     browser.goTo(story.url);
+
+    console.log('crawl', story.id, story.url);
 
     const hash = crypto.createHash('md5').update(story.url).digest('hex');
     const imageDir = `./img/${story.id}-${hash}`;
